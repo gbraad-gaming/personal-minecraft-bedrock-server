@@ -1,0 +1,33 @@
+name: tailscale-ssh
+on:
+  workflow_dispatch:
+
+jobs:
+  minecraft-test:
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Run system container with `podman`
+        run: |
+          podman run -d --name minecraft \
+            --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun \
+            ghcr.io/gbraad-gaming/minecraft-server:latest
+      - name: Tailscale setup (root)
+        run: |
+          until podman exec minecraft tailscale up --auth-key ${TAILSCALE_AUTHKEY}
+          do
+              sleep 0.1
+          done
+          podman exec minecraft tailscale set --ssh
+          podman exec minecraft tailscale set --hostname github-${HOSTNAME}
+        env:
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+      - name: Hang around
+        run: |
+          until podman exec minecraft systemctl is-active --quiet tailscaled
+          do
+               sleep 1
+          done
+          IP=`podman exec minecraft tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
+          sleep infinity

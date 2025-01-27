@@ -1,0 +1,25 @@
+[Unit]
+Description=Minecraft Bedrock server
+Wants=network.target
+After=network.target
+
+[Service]
+User=minecraft
+Group=minecraft
+
+Type=forking
+
+ProtectHome=true
+ProtectSystem=full
+#PrivateDevices=true
+NoNewPrivileges=true
+InaccessibleDirectories=/root /sys /srv /media -/lost+found
+ReadWriteDirectories=/var/home/minecraft
+WorkingDirectory=/var/home/minecraft
+ExecStart=/opt/minecraft/start.sh
+ExecStop=/opt/minecraft/stop.sh
+TimeoutStopSec=20
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

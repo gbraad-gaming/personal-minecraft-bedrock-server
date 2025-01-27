@@ -1,0 +1,13 @@
+{
+    "name": "Minecraft remote server",
+    "image": "ghcr.io/gbraad-gaming/minecraft-server:latest",
+    "runArgs": [ "--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "--device=/dev/net/tun", "--device=/dev/fuse" ],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.Theme-TomorrowKit"
+            ]
+        }
+    }
+}
