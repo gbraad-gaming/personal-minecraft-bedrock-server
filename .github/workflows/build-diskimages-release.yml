@@ -3,7 +3,9 @@ run-name: building diskimage (bootc)
 
 on:
   workflow_dispatch:
-
+  schedule:
+    - cron: "0 0 */2 * *"
+    
 env:
     IMAGE_NAME: ghcr.io/gbraad-gaming/minecraft-server-bootc:latest
     DISK_TYPE: qcow2
@@ -68,10 +70,13 @@ jobs:
     - name: Split output result
       run: sudo split -b 1800M --numeric-suffixes=0 --suffix-length=1 ./output/qcow2/disk.qcow2 ./output/qcow2/disk.qcow2_part
 
+    - name: Set release tag
+      run: echo "TAG=$(date +'%y%m%d')" >> $GITHUB_ENV
+
     - name: Create a GitHub release
       uses: ncipollo/release-action@v1
       with:
-        tag: latest
-        name: Latest
+        tag: ${{ env.TAG }}
+        name: Disk images (${{ env.TAG }})
         body: ${{ env.BODY }}
         artifacts: "output/bootiso/*.iso,./output/qcow2/*,"
