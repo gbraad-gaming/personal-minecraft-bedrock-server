@@ -26,7 +26,6 @@ jobs:
            pip install requests
            python ./scripts/download.py "https://www.minecraft.net/en-us/download/server/bedrock"
 
-
       - name: Run Machinefile commands
         uses: gbraad-actions/machinefile-executor-action@v1
         with:
@@ -39,8 +38,38 @@ jobs:
           sudo systemctl start minecraft-server
           sudo systemctl status minecraft-server
 
-      - name: Hang around
+      - name: Usage message
         run: |
           IP=`tailscale ip -4`
           echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
-          sleep infinity
+
+      - name: Hang around
+        if: ${{ always() }}
+        run: |
+          sleep 18000
+
+      - name: Message user; 1 hour
+        run: |
+          sudo wall "about 1 hour remaining"
+          sleep 1800
+
+      - name: Message user; 20 minutes
+        run: |
+          sudo wall "20 minutes remaining"
+          sleep 1200
+
+      - name: Stop and move worlds folder
+        if: ${{ always() }}
+        run: |
+          sudo systemctl stop minecraft-server
+          sudo mv ~minecraft/worlds ${{ github.workspace }}/worlds
+          sudo chown -r runner ${{ github.workspace}}/worlds
+
+      - name: Upload Artifact - Worlds
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: worlds
+          path: ${{ github.workspace }}/worlds
+          retention-days: 1
+          include-hidden-files: true

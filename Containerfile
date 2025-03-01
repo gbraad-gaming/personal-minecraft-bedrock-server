@@ -3,11 +3,14 @@ ARG BASE_VERSION=41
 
 FROM ${BASE_IMAGE}:${BASE_VERSION}
 
+ARG USER="minecraft"
+ARG HOMEBASE="/home"
+ARG USERHOME="${HOMEBASE}/${USER}"
 ARG USER_PASSWD="minecraft"
 
 USER root
 
-RUN useradd -l -u 2000 -md /var/home/minecraft -s /bin/bash -p minecraft minecraft  \
+RUN useradd -l -u 2000 -md ${USERHOME} -s /bin/bash -p ${USER} ${USER}  \
     && if [ -n "${USER_PASSWD}" ] ; then \
         echo "minecraft:${USER_PASSWD}" | sudo chpasswd && echo "Password set to: ${USER_PASSWD}"; \
     fi
