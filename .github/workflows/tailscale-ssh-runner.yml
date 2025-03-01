@@ -44,7 +44,6 @@ jobs:
           echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
 
       - name: Hang around
-        if: ${{ always() }}
         run: |
           sleep 18000
 
@@ -63,7 +62,6 @@ jobs:
         run: |
           sudo systemctl stop minecraft-server
           sudo mv ~minecraft/worlds ${{ github.workspace }}/worlds
-          sudo chown -r runner ${{ github.workspace}}/worlds
 
       - name: Upload Artifact - Worlds
         if: ${{ always() }}

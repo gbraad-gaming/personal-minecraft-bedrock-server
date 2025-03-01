@@ -8,16 +8,14 @@ User=minecraft
 Group=minecraft
 
 Type=forking
-
-ProtectHome=true
 ProtectSystem=full
-#PrivateDevices=true
+PrivateDevices=true
 NoNewPrivileges=true
 InaccessibleDirectories=/root /sys /srv /media -/lost+found
 ReadWriteDirectories=%h
-WorkingDirectory=%h
-ExecStart=/opt/minecraft/start.sh
-ExecStop=/opt/minecraft/stop.sh
+#WorkingDirectory=%h
+ExecStart=/bin/sh -c "cd $HOME && /opt/minecraft/start.sh"
+ExecStop=/bin/sh -c "cd $HOME && /opt/minecraft/stop.sh"
 TimeoutStopSec=20
 Restart=on-failure
 
