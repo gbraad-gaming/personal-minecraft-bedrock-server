@@ -1,4 +1,5 @@
-name: tailscale-ssh
+name: tailscale-ssh-fedora
+
 on:
   workflow_dispatch:
 
@@ -7,11 +8,15 @@ jobs:
     runs-on: ubuntu-24.04
     
     steps:
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
       - name: Run system container with `podman`
         run: |
           podman run -d --name minecraft \
             --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun \
             ghcr.io/gbraad-gaming/minecraft-server:latest
+
       - name: Tailscale setup (root)
         run: |
           until podman exec minecraft tailscale up --auth-key ${TAILSCALE_AUTHKEY}
@@ -22,6 +27,7 @@ jobs:
           podman exec minecraft tailscale set --hostname github-${HOSTNAME}
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
+
       - name: Hang around
         run: |
           until podman exec minecraft systemctl is-active --quiet tailscaled

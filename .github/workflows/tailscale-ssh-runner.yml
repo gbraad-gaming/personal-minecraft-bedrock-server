@@ -1,0 +1,46 @@
+name: tailscale-ssh-runner
+on:
+  workflow_dispatch:
+
+jobs:
+  minecraft-test-runner:
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Remove unwanted stuff
+        uses: gbraad-devenv/remove-unwanted@v1
+
+      - name: Tailscale
+        uses: gbraad-actions/tailscale-action@v1
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          args: --ssh --accept-dns=false --operator=runner
+          hostname: minecraft-runner
+
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Download server binary
+        run: |
+           python -m pip install --upgrade pip
+           pip install requests
+           python ./scripts/download.py "https://www.minecraft.net/en-us/download/server/bedrock"
+
+
+      - name: Run Machinefile commands
+        uses: gbraad-actions/machinefile-executor-action@v1
+        with:
+          containerfile: 'Containerfile'
+          context: '.'
+
+      - name: Run server
+        run: |
+          sudo systemctl daemon-reload
+          sudo systemctl start minecraft-server
+          sudo systemctl status minecraft-server
+
+      - name: Hang around
+        run: |
+          IP=`tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh runner@${IP}\`"
+          sleep infinity

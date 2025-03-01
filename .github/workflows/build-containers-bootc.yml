@@ -1,9 +1,12 @@
 name: build container (bootc)
 run-name: building container (bootc)
+
 on:
   workflow_dispatch:
+
 jobs:
   build:
+    name: build-containers-bootc
     permissions:
       contents: read
       packages: write
@@ -12,22 +15,29 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-24.04
+          - ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
       - name: Download server binary
         run: |
            python -m pip install --upgrade pip
            pip install requests
            python ./scripts/download.py "https://www.minecraft.net/en-us/download/server/bedrock"
+
       - name: Run podman build - Minecraft (bootc)
         run: |
           podman build -t ghcr.io/gbraad-gaming/minecraft-server-bootc:latest \
             --build-arg=BASE_IMAGE="ghcr.io/gbraad-devenv/fedora/systemd-bootc" \
             --build-arg=BASE_VERSION=41 \
             -f Containerfile .
+
+      - name: Login to ghcr.io
+        run: |
+          podman login ghcr.io -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }}
       - name: Push image to ghcr.io - Minecraft (bootc)
         run: |
-          podman push --creds=${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/gbraad-gaming/minecraft-server-bootc:latest
+          podman push ghcr.io/gbraad-gaming/minecraft-server-bootc:latest
