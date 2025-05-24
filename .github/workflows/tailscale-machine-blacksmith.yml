@@ -1,0 +1,13 @@
+name: tailscale-ssh-machine-blacksmith
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-machine:
+    name: Tailscale SSH Machine - Blacksmith
+    uses: ./.github/workflows/reusable-tailscale-machine.yml
+    with:
+      runs-on: "blacksmith-2vcpu-ubuntu-2404"
+      hostname: "gaming-minecraft-server"
+    secrets: inherit

@@ -1,14 +1,13 @@
-name: tailscale-ssh
+name: tailscale-ssh-machine
 
 on:
   workflow_dispatch:
 
 jobs:
-  ssh-test:
+  ssh-machine:
     name: Tailscale SSH Machine - GitHub
-    uses: ./.github/workflows/reusable-tailscale-ssh.yml
+    uses: ./.github/workflows/reusable-tailscale-machine.yml
     with:
       runs-on: "ubuntu-latest"
-      image: "ghcr.io/gbraad-gaming/minecraft-server:latest"
       hostname: "gaming-minecraft-server"
     secrets: inherit

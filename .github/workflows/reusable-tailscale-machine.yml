@@ -1,10 +1,22 @@
 name: tailscale-ssh-machine
+
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: "Target runner"
+        required: true
+        type: string
+        default: "ubuntu-latest"
+      hostname:
+        description: "Hostname for machine"
+        required: false
+        type: string
+        default: "rdesktop"
 
 jobs:
-  minecraft-test-runner:
-    runs-on: ubuntu-24.04
+  machine-test-runner:
+    runs-on: ${{ inputs.runs-on }}
     
     steps:
       - name: Remove unwanted stuff
@@ -15,7 +27,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
           args: --ssh --accept-dns=false --operator=runner
-          hostname: minecraft-machine
+          hostname: ${{ inputs.hostname }}
 
       - name: Check out repository code
         uses: actions/checkout@v4
