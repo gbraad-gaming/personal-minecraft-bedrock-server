@@ -19,6 +19,9 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
     
     steps:
+      - name: Enable linger and start user session (workaround)
+        uses: gbraad-actions/blacksmith-user-session@main
+
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 
