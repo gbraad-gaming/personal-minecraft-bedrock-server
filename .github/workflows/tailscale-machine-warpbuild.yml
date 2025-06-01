@@ -1,0 +1,13 @@
+name: tailscale-ssh-machine-warpbuild
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-machine:
+    name: Tailscale SSH Machine - WarpBuild
+    uses: ./.github/workflows/reusable-tailscale-machine.yml
+    with:
+      runs-on: "warp-ubuntu-latest-x64-2x"
+      hostname: "gaming-minecraft-server"
+    secrets: inherit

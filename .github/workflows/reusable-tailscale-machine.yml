@@ -22,6 +22,9 @@ jobs:
       - name: Enable linger and start user session (workaround)
         uses: gbraad-actions/blacksmith-user-session@main
 
+      - name: WarpBuild Unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
+
       - name: Remove unwanted stuff
         uses: gbraad-devenv/remove-unwanted@v1
 

@@ -27,6 +27,9 @@ jobs:
       - name: Enable linger and start user session (workaround)
         uses: gbraad-actions/blacksmith-user-session@main
 
+      - name: WarpBuild Unprivileged userns (workaround)
+        uses: gbraad-actions/warpbuild-unprivileged-userns@main
+
       - name: Run system container with `podman`
         run: |
           podman run -d --name rdesktop --hostname ${{ inputs.hostname }} \
