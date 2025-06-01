@@ -1,4 +1,4 @@
-name: tailscale-rdesktop
+name: tailscale-remote
 
 on:
   workflow_call:
@@ -16,10 +16,10 @@ on:
         description: "Hostname for container image"
         required: false
         type: string
-        default: "rdesktop"
+        default: "remote"
 
 jobs:
-  rdesktop-test:
+  remote-test:
     runs-on: ${{ inputs.runs-on }}
     
     steps:
@@ -32,27 +32,27 @@ jobs:
 
       - name: Run system container with `podman`
         run: |
-          podman run -d --name rdesktop --hostname ${{ inputs.hostname }} \
+          podman run -d --name remote --hostname ${{ inputs.hostname }} \
             --privileged \
             --cap-add=NET_ADMIN --cap-add=NET_RAW --device=/dev/net/tun --device=/dev/fuse \
             ${{ inputs.image }}
       - name: Tailscale setup (root)
         run: |
-          until podman exec rdesktop tailscale up --auth-key ${TAILSCALE_AUTHKEY} --hostname ${{ inputs.hostname }}
+          until podman exec remote tailscale up --auth-key ${TAILSCALE_AUTHKEY} --hostname ${{ inputs.hostname }}
           do
               sleep 0.1
           done
-          podman exec rdesktop tailscale set --ssh
-          podman exec rdesktop chmod 640 /etc/shadow
+          podman exec remote tailscale set --ssh
+          podman exec remote chmod 640 /etc/shadow
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY}}
 
       - name: Hang around
         run: |
-          until podman exec rdesktop systemctl is-active kasmvncserver
+          until podman exec remote systemctl is-active tailscaled
           do
                sleep 1
           done
-          IP=`podman exec rdesktop tailscale ip -4`
-          echo "Open in your web browser: https://${IP}:8444"
+          IP=`podman exec remote tailscale ip -4`
+          echo "Use the following command to connect \`tailscale ssh gbraad@${IP}\`"
           sleep infinity
